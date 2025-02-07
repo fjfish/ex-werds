@@ -1,4 +1,4 @@
-defmodule Werdz do
+defmodule Werds do
   @moduledoc """
   A module to generate valid word variants from a base word.
   """
@@ -39,14 +39,14 @@ defmodule Werdz do
     end)
   end
 
-  defp make_mask(string) do
-    string
-    # Split the string into individual characters
-    |> String.graphemes()
-    |> Enum.reduce(%{}, fn char, acc ->
-      # Update the count for each character
-      Map.update(acc, char, 1, &(&1 + 1))
-    end)
+  @doc """
+  This takes a string mask like "...x.." and creates a string that can be turned into
+  a regex for searching:
+
+  Say the word is "banana" and we want to see words that will match a pattern like "..ana", as in each . would match the unused characters from our source word. You would need something like /[ban][ban]ana/ - this method generates it.
+
+  """
+  def make_mask(base_word, string) do
   end
 
   defp perform_match(true, str, list, mask) do

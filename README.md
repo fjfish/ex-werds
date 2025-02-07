@@ -1,6 +1,10 @@
 # Werdz
 
-**TODO: Add description**
+Elixir adaptation of the unfinished [Werds Gem](https://github.com/fjfish/werds). It takes a word and a match pattern. 
+
+This is then used to find words that contain the letters of the word and match the pattern given. It was created in frustration when crossword games on my phone were charging very silly money for hints.
+
+Plans include creating a word puzzle solver website, with this implementation as the first iteration.
 
 ## Installation
 
@@ -18,34 +22,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/werdz>.
-
-defmodule Werds do
-@moduledoc """
-A module to generate valid word variants from a base word.
-"""
-
-# Load the dictionary into a MapSet for quick lookup
-@dictionary "path/to/dictionary.txt"
-|> File.read!()
-|> String.split("\n", trim: true)
-|> MapSet.new()
-
-@doc """
-Generates all valid word variants from the given base word.
-"""
-def generate_variants(base_word) do
-base_word
-|> String.downcase()
-|> String.graphemes()
-|> permutations()
-|> Enum.uniq()
-|> Enum.filter(&MapSet.member?(@dictionary, &1))
-end
-
-# Generates all permutations of the given list of characters
-defp permutations([]), do: [[]]
-
-defp permutations(list) do
-for elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest]
-end
-end
