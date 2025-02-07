@@ -1,8 +1,8 @@
-defmodule WerdzTest do
+defmodule WerdsTest do
   use ExUnit.Case
-  doctest Werdz
+  doctest Werds
 
   test "Creates word mask" do
-    assert Werdz.hello() == :world
+    assert Werds.hello() == :world
   end
 end

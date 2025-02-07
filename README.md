@@ -1,4 +1,4 @@
-# Werdz
+# Werds
 
 Elixir adaptation of the unfinished [Werds Gem](https://github.com/fjfish/werds). It takes a word and a match pattern. 
 
@@ -9,16 +9,16 @@ Plans include creating a word puzzle solver website, with this implementation as
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `werdz` to your list of dependencies in `mix.exs`:
+by adding `werds` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:werdz, "~> 0.1.0"}
+    {:werds, "~> 0.1.0"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/werdz>.
+be found at <https://hexdocs.pm/werds>.

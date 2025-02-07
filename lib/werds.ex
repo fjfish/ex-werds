@@ -4,7 +4,7 @@ defmodule Werds do
   """
 
   # Load the dictionary into a MapSet for quick lookup
-  @dictionary Path.join(:code.priv_dir(:werdz), "/data/dictionary")
+  @dictionary Path.join(:code.priv_dir(:werds), "/data/dictionary")
               |> File.read!()
               |> String.downcase()
               |> String.split("\n", trim: true)
