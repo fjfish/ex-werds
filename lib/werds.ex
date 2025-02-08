@@ -38,7 +38,7 @@ defmodule Werds do
         end
       end)
       |> Enum.reduce([], fn str, list ->
-        if check_word(str, source_char_counts) do
+        if check_word(match_char_counts, source_char_counts) do
           [str | list]
         else
           list
@@ -77,23 +77,28 @@ defmodule Werds do
     "^#{String.replace(pre_processed_match, ".", "[#{adjusted_regex}]")}$"
   end
 
-  defp get_char_counts(word) do
-    Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
-      count = Map.get(acc, char, 0)
-      Map.put(acc, char, count + 1)
-    end)
-  end
-
   @doc """
   Check that the number of letters in the candidate word are less than or equal
     to the number of letters in the word we used as a source
   """
-  def check_word(word, source_char_counts) do
-    word_char_counts = get_char_counts(word)
+  @spec check_word(Map.t(), Map.t()) :: true|false
+  def check_word(word_char_counts, source_char_counts) do
     Map.keys(word_char_counts)
     |> Enum.reduce(true, fn char, acc ->
       acc and Map.get(source_char_counts, char) >= Map.get(word_char_counts, char)
     end)
   end
 
+#  @doc """
+#  Utility function that returns a map with the characters in a word as keys,
+#  and the number of times each letter appears. Used to further refine
+#  the list of words after the first regex pass
+#  """
+#  @spec get_char_counts(String.t()) :: Map.t()
+  defp get_char_counts(word) do
+    Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
+      count = Map.get(acc, char, 0)
+      Map.put(acc, char, count + 1)
+    end)
+  end
 end
