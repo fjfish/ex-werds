@@ -25,7 +25,8 @@ defmodule Werds.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:ex_guard, ">= 1.6.1", only: :dev},
       # optional for linting
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:ex_unit_notifier, "~> 1.3", only: :test}
     ]
   end
 end

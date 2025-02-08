@@ -8,12 +8,6 @@
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.elixir_ls" />
-      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix" />
-      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix_html" />
-      <excludeFolder url="file://$MODULE_DIR$/cover" />
-      <excludeFolder url="file://$MODULE_DIR$/deps" />
-      <excludeFolder url="file://$MODULE_DIR$/doc" />
-      <excludeFolder url="file://$MODULE_DIR$/logs" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/bunt" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/credo" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/ex_guard" />
@@ -22,17 +16,26 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/jason" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/bunt" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/credo" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/ex_unit_notifier" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/file_system" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/jason" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix_html" />
+      <excludeFolder url="file://$MODULE_DIR$/cover" />
+      <excludeFolder url="file://$MODULE_DIR$/deps" />
+      <excludeFolder url="file://$MODULE_DIR$/doc" />
+      <excludeFolder url="file://$MODULE_DIR$/logs" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ex_guard" level="project" />
     <orderEntry type="library" name="credo" level="project" />
+    <orderEntry type="library" name="ex_unit_notifier" level="project" />
     <orderEntry type="library" name="fs" level="project" />
     <orderEntry type="library" name="ex_doc" level="project" />
     <orderEntry type="library" name="earmark" level="project" />
     <orderEntry type="library" name="file_system" level="project" />
     <orderEntry type="library" name="bunt" level="project" />
     <orderEntry type="library" name="jason" level="project" />
+    <orderEntry type="library" name="mix_test_watch" level="project" />
   </component>
 </module>
