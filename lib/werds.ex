@@ -17,18 +17,18 @@ defmodule Werds do
   a "normal" regex, but when we have a . it matches the unused letters
   from the source word
   """
-  @spec words(String.t(), String.t()) :: [String.t()] | { :error, String.t() }
+  @spec words(String.t(), String.t()) :: [String.t()] | {:error, String.t()}
   def words(source_word, match_pattern) do
     {:ok, search_pattern} =
       Regex.compile(make_mask(source_word, match_pattern))
 
     source_char_counts = get_char_counts(source_word)
-    match_char_counts = get_char_counts(String.replace(match_pattern,".",""))
+    match_char_counts = get_char_counts(String.replace(match_pattern, ".", ""))
 
     extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
 
     if extra_letters != [] do
-      { :error, "Source word does not have letters '#{extra_letters}'"}
+      {:error, "Source word does not have letters '#{extra_letters}'"}
     else
       Enum.reduce(@dictionary, [], fn str, list ->
         if Regex.match?(search_pattern, str) do
@@ -45,7 +45,6 @@ defmodule Werds do
         end
       end)
     end
-
   end
 
   @doc """
@@ -74,6 +73,7 @@ defmodule Werds do
       Enum.reduce(used_chars, source_word, fn char, acc ->
         String.replace(acc, char, "", global: false)
       end)
+
     "^#{String.replace(pre_processed_match, ".", "[#{adjusted_regex}]")}$"
   end
 
@@ -81,7 +81,7 @@ defmodule Werds do
   Check that the number of letters in the candidate word are less than or equal
     to the number of letters in the word we used as a source
   """
-  @spec check_word(Map.t(), Map.t()) :: true|false
+  @spec check_word(Map.t(), Map.t()) :: true | false
   def check_word(word_char_counts, source_char_counts) do
     Map.keys(word_char_counts)
     |> Enum.reduce(true, fn char, acc ->
@@ -89,12 +89,12 @@ defmodule Werds do
     end)
   end
 
-#  @doc """
-#  Utility function that returns a map with the characters in a word as keys,
-#  and the number of times each letter appears. Used to further refine
-#  the list of words after the first regex pass
-#  """
-#  @spec get_char_counts(String.t()) :: Map.t()
+  #  @doc """
+  #  Utility function that returns a map with the characters in a word as keys,
+  #  and the number of times each letter appears. Used to further refine
+  #  the list of words after the first regex pass
+  #  """
+  #  @spec get_char_counts(String.t()) :: Map.t()
   defp get_char_counts(word) do
     Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
       count = Map.get(acc, char, 0)
