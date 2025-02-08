@@ -17,18 +17,35 @@ defmodule Werds do
   a "normal" regex, but when we have a . it matches the unused letters
   from the source word
   """
-  @spec words(String.t(), String.t()) :: [String.t()]
+  @spec words(String.t(), String.t()) :: [String.t()] | { :error, String.t() }
   def words(source_word, match_pattern) do
     {:ok, search_pattern} =
       Regex.compile(make_mask(source_word, match_pattern))
 
-    Enum.reduce(@dictionary, [], fn str, list ->
-      if Regex.match?(search_pattern, str) do
-        [str | list]
-      else
-        list
-      end
-    end)
+    source_char_counts = get_char_counts(source_word)
+    match_char_counts = get_char_counts(String.replace(match_pattern,".",""))
+
+    extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+
+    if extra_letters != [] do
+      { :error, "Source word does not have letters '#{extra_letters}'"}
+    else
+      Enum.reduce(@dictionary, [], fn str, list ->
+        if Regex.match?(search_pattern, str) do
+          [str | list]
+        else
+          list
+        end
+      end)
+      |> Enum.reduce([], fn str, list ->
+        if check_word(str, source_char_counts) do
+          [str | list]
+        else
+          list
+        end
+      end)
+    end
+
   end
 
   @doc """
@@ -37,7 +54,7 @@ defmodule Werds do
 
   Say the word is "banana" and we want to see words that will match a pattern like "..ana",
   as in each . would match the unused characters from our source word.
-  You would need /[ban][ban]ana/ - this method generates it.
+  You would need /\[ban]\[ban]ana/ - this method generates it.
 
   """
   @spec make_mask(String.t(), String.t()) :: String.t()
@@ -59,4 +76,24 @@ defmodule Werds do
       end)
     "^#{String.replace(pre_processed_match, ".", "[#{adjusted_regex}]")}$"
   end
+
+  defp get_char_counts(word) do
+    Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
+      count = Map.get(acc, char, 0)
+      Map.put(acc, char, count + 1)
+    end)
+  end
+
+  @doc """
+  Check that the number of letters in the candidate word are less than or equal
+    to the number of letters in the word we used as a source
+  """
+  def check_word(word, source_char_counts) do
+    word_char_counts = get_char_counts(word)
+    Map.keys(word_char_counts)
+    |> Enum.reduce(true, fn char, acc ->
+      acc and Map.get(source_char_counts, char) >= Map.get(word_char_counts, char)
+    end)
+  end
+
 end

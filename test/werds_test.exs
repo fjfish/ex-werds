@@ -19,9 +19,16 @@ defmodule WerdsTest do
 
   describe "words" do
 
-    test "it finds some" do
+    test "it finds a word" do
       assert Werds.words("dredge", "d..d") == ["deed"]
     end
+
+    test "it doesn't double up letters" do
+      assert Werds.words("dredge", "..a.") == {:error, "Source word does not have letters 'a'"}
+    end
+  end
+
+  describe "word_filter" do
 
   end
 end
