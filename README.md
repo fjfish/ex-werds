@@ -16,17 +16,27 @@ Note that the word list has only been minimally cleaned up, be careful of folks 
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `werds` to your list of dependencies in `mix.exs`:
+We haven't yet done the bureaucratic stuff to get into Hex,
+so instead the package can be installed
+by adding a github dependency `werds` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:werds, "~> 0.1.0"}
+    {:werds, github: "fjfish/ex-werds"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/werds>.
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/fjfish/ex-werds. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/fjfish/ex-werds/blob/master/CODE_OF_CONDUCT.md).
+
+## License
+
+The library is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Code of Conduct
+
+Everyone interacting in the Werds project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/fjfish/ex-werds/blob/master/CODE_OF_CONDUCT.md).
+
