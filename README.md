@@ -12,7 +12,7 @@ Some of these games lay the words out in a crossword-like structure, others just
 
 It uses a word list that was derived from the excellent tool [Scowl](http://wordlist.aspell.net/) with the command `./mk-list english british american 70 --accents strip > dictionary` - which gives is a list of several thousand words with no accents.
 
-Note that the word list has not been cleaned up, be careful of folks who get offended easily.
+Note that the word list has only been minimally cleaned up, be careful of folks who get offended easily.
 
 ## Installation
 
