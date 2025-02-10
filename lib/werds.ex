@@ -38,7 +38,7 @@ defmodule Werds do
         end
       end)
       |> Enum.reduce([], fn str, list ->
-        if check_word(match_char_counts, source_char_counts) do
+        if check_word(get_char_counts(str), source_char_counts) do
           [str | list]
         else
           list

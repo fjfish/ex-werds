@@ -24,11 +24,11 @@ defmodule WerdsTest do
     end
 
     test "it doesn't double up letters" do
+      assert Enum.find(Werds.words("ranger", "....."),&(&1 == "agana")) == nil
+    end
+
+    test "it doesn't allow letters that aren't in source word" do
       assert Werds.words("dredge", "..a.") == {:error, "Source word does not have letters 'a'"}
     end
-  end
-
-  describe "word_filter" do
-
   end
 end
