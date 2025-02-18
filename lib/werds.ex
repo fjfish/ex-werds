@@ -27,23 +27,25 @@ defmodule Werds do
 
     extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
 
-    if extra_letters != [] do
-      {:error, "Source word does not have letters '#{extra_letters}'"}
-    else
-      Enum.reduce(@dictionary, [], fn str, list ->
-        if Regex.match?(search_pattern, str) do
-          [str | list]
-        else
-          list
-        end
-      end)
-      |> Enum.reduce([], fn str, list ->
-        if check_word(get_char_counts(str), source_char_counts) do
-          [str | list]
-        else
-          list
-        end
-      end)
+    case extra_letters do
+      [] ->
+        Enum.reduce(@dictionary, [], fn str, list ->
+          if Regex.match?(search_pattern, str) do
+            [str | list]
+          else
+            list
+          end
+        end)
+        |> Enum.reduce([], fn str, list ->
+          if check_word(get_char_counts(str), source_char_counts) do
+            [str | list]
+          else
+            list
+          end
+        end)
+
+      _ ->
+        {:error, "Source word does not have letters '#{extra_letters}'"}
     end
   end
 
@@ -92,7 +94,7 @@ defmodule Werds do
   #  @doc """
   #  Utility function that returns a map with the characters in a word as keys,
   #  and the number of times each letter appears. Used to further refine
-  #  the list of words after the first regex pass
+  #  the list of words after the first regex pass and other checking
   #  """
   #  @spec get_char_counts(String.t()) :: Map.t()
   defp get_char_counts(word) do
