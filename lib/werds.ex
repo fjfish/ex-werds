@@ -21,7 +21,7 @@ defmodule Werds do
 
   Options [:proper_names] and [:acronyms] will do the obvious thing
 
-  The option [:standard] turns of caseless and will only find "proper" words
+  The option [:standard] turns off caseless and will only find "proper" words
   """
   @spec words(String.t(), String.t(), [term()]) :: [String.t()] | {:error, String.t()}
 
