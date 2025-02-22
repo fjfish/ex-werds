@@ -41,8 +41,8 @@ defmodule Werds do
         case extra_letters do
           [] ->
             @dictionary
-            |> Enum.filter(&(Regex.match?(search_pattern, &1)))
-            |> Enum.filter( &(check_word(get_char_counts(&1), source_char_counts)))
+            |> Enum.filter(&Regex.match?(search_pattern, &1))
+            |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
 
           _ ->
             {:error, "Source word does not have letters '#{extra_letters}'"}
@@ -97,10 +97,12 @@ defmodule Werds do
   #  """
   #  @spec get_char_counts(String.t()) :: Map
   defp get_char_counts(word) do
-    word |> String.downcase |> String.graphemes |>
-      Enum.reduce(%{}, fn char, acc ->
-        count = Map.get(acc, char, 0)
-        Map.put(acc, char, count + 1)
-      end)
+    word
+    |> String.downcase()
+    |> String.graphemes()
+    |> Enum.reduce(%{}, fn char, acc ->
+      count = Map.get(acc, char, 0)
+      Map.put(acc, char, count + 1)
+    end)
   end
 end
