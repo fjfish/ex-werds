@@ -7,6 +7,8 @@ defmodule Werds.MixProject do
       version: "1.0.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
+      description: "Find dictionary words that can be constructed from a given word",
+      author: "Francis Fish",
       deps: deps(),
       package: package()
     ]
@@ -21,7 +23,7 @@ defmodule Werds.MixProject do
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README", "LICENSE*"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE*"],
       maintainers: ["Francis Fish"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/fjfish/ex-werds"}
@@ -36,7 +38,8 @@ defmodule Werds.MixProject do
       {:ex_guard, ">= 1.6.1", only: :dev},
       # optional for linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ex_unit_notifier, "~> 1.3", only: :test}
+      {:ex_unit_notifier, "~> 1.3", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 end

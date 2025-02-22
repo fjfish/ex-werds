@@ -83,7 +83,7 @@ defmodule Werds do
   Check that the number of letters in the candidate word are less than or equal
     to the number of letters in the word we used as a source
   """
-  @spec check_word(Map.t(), Map.t()) :: true | false
+  @spec check_word(Map, Map) :: true | false
   def check_word(word_char_counts, source_char_counts) do
     Map.keys(word_char_counts)
     |> Enum.reduce(true, fn char, acc ->
@@ -96,7 +96,7 @@ defmodule Werds do
   #  and the number of times each letter appears. Used to further refine
   #  the list of words after the first regex pass and other checking
   #  """
-  #  @spec get_char_counts(String.t()) :: Map.t()
+  #  @spec get_char_counts(String.t()) :: Map
   defp get_char_counts(word) do
     Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
       count = Map.get(acc, char, 0)
