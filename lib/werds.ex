@@ -18,33 +18,41 @@ defmodule Werds do
   """
   @spec words(String.t(), String.t()) :: [String.t()] | {:error, String.t()}
   def words(source_word, match_pattern) do
-    {:ok, search_pattern} =
-      Regex.compile(make_mask(source_word, match_pattern))
+    processed_match_pattern = match_pattern |> String.replace(@ellipsis, "...")
 
-    source_char_counts = get_char_counts(source_word)
-    match_char_counts = get_char_counts(String.replace(match_pattern, ".", ""))
+    cond do
+      String.length(source_word) < String.length(processed_match_pattern) ->
+        {:error, "Matcher has too many letters"}
 
-    extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+      true ->
+        {:ok, search_pattern} =
+          Regex.compile(make_mask(source_word, processed_match_pattern))
 
-    case extra_letters do
-      [] ->
-        Enum.reduce(@dictionary, [], fn str, list ->
-          if Regex.match?(search_pattern, str) do
-            [str | list]
-          else
-            list
-          end
-        end)
-        |> Enum.reduce([], fn str, list ->
-          if check_word(get_char_counts(str), source_char_counts) do
-            [str | list]
-          else
-            list
-          end
-        end)
+        source_char_counts = get_char_counts(source_word)
+        match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
 
-      _ ->
-        {:error, "Source word does not have letters '#{extra_letters}'"}
+        extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+
+        case extra_letters do
+          [] ->
+            Enum.reduce(@dictionary, [], fn str, list ->
+              if Regex.match?(search_pattern, str) do
+                [str | list]
+              else
+                list
+              end
+            end)
+            |> Enum.reduce([], fn str, list ->
+              if check_word(get_char_counts(str), source_char_counts) do
+                [str | list]
+              else
+                list
+              end
+            end)
+
+          _ ->
+            {:error, "Source word does not have letters '#{extra_letters}'"}
+        end
     end
   end
 
@@ -61,7 +69,6 @@ defmodule Werds do
   def make_mask(source_word, match_string) do
     pre_processed_match =
       match_string
-      |> String.replace(@ellipsis, "...")
       |> String.downcase()
       |> String.replace(~r/[[:space:]]/, "")
 

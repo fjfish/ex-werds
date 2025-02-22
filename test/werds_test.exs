@@ -30,5 +30,9 @@ defmodule WerdsTest do
     test "it doesn't allow letters that aren't in source word" do
       assert Werds.words("dredge", "..a.") == {:error, "Source word does not have letters 'a'"}
     end
+
+    test "it doesn't allow more letters than the source word" do
+      assert Werds.words("dredge", "dredger") == {:error, "Matcher has too many letters"}
+    end
   end
 end
