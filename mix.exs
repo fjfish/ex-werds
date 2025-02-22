@@ -4,17 +4,27 @@ defmodule Werds.MixProject do
   def project do
     [
       app: :werds,
-      version: "0.1.0",
+      version: "1.0.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: []
+    ]
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs", "README", "LICENSE*"],
+      maintainers: ["Francis Fish"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/fjfish/ex-werds"}
     ]
   end
 
