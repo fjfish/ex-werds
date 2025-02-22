@@ -15,9 +15,12 @@ defmodule Werds do
   `source`, that conform to the match pattern. The match looks like
   a "normal" regex, but when we have a . it matches the unused letters
   from the source word
+
+  The default search is caseless and will find acronyms and proper names,
+    pass an empty options list to turn this behaviour off
   """
-  @spec words(String.t(), String.t()) :: [String.t()] | {:error, String.t()}
-  def words(source_word, match_pattern) do
+  @spec words(String.t(), String.t(), [term()]) :: [String.t()] | {:error, String.t()}
+  def words(source_word, match_pattern, options \\ [:caseless]) do
     processed_match_pattern = match_pattern |> String.replace(@ellipsis, "...")
 
     cond do
@@ -26,29 +29,20 @@ defmodule Werds do
 
       true ->
         {:ok, search_pattern} =
-          Regex.compile(make_mask(source_word, processed_match_pattern))
+          Regex.compile(make_mask(source_word, processed_match_pattern), options)
 
         source_char_counts = get_char_counts(source_word)
         match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
 
         extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
 
+        # ella test should be error
+
         case extra_letters do
           [] ->
-            Enum.reduce(@dictionary, [], fn str, list ->
-              if Regex.match?(search_pattern, str) do
-                [str | list]
-              else
-                list
-              end
-            end)
-            |> Enum.reduce([], fn str, list ->
-              if check_word(get_char_counts(str), source_char_counts) do
-                [str | list]
-              else
-                list
-              end
-            end)
+            @dictionary
+            |> Enum.filter(&(Regex.match?(search_pattern, &1)))
+            |> Enum.filter( &(check_word(get_char_counts(&1), source_char_counts)))
 
           _ ->
             {:error, "Source word does not have letters '#{extra_letters}'"}
@@ -69,7 +63,6 @@ defmodule Werds do
   def make_mask(source_word, match_string) do
     pre_processed_match =
       match_string
-      |> String.downcase()
       |> String.replace(~r/[[:space:]]/, "")
 
     used_chars =
@@ -93,7 +86,7 @@ defmodule Werds do
   def check_word(word_char_counts, source_char_counts) do
     Map.keys(word_char_counts)
     |> Enum.reduce(true, fn char, acc ->
-      acc and Map.get(source_char_counts, char) >= Map.get(word_char_counts, char)
+      acc and source_char_counts[char] >= word_char_counts[char]
     end)
   end
 
@@ -104,9 +97,10 @@ defmodule Werds do
   #  """
   #  @spec get_char_counts(String.t()) :: Map
   defp get_char_counts(word) do
-    Enum.reduce(String.graphemes(word), %{}, fn char, acc ->
-      count = Map.get(acc, char, 0)
-      Map.put(acc, char, count + 1)
-    end)
+    word |> String.downcase |> String.graphemes |>
+      Enum.reduce(%{}, fn char, acc ->
+        count = Map.get(acc, char, 0)
+        Map.put(acc, char, count + 1)
+      end)
   end
 end

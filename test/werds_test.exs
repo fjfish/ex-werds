@@ -34,5 +34,22 @@ defmodule WerdsTest do
     test "it doesn't allow more letters than the source word" do
       assert Werds.words("dredge", "dredger") == {:error, "Matcher has too many letters"}
     end
+
+    test "it doesn't allow source letters to be used more than once" do
+      assert Werds.words("elegant", "tall") == []
+    end
+  end
+
+  describe "options" do
+
+    test "it matches case when option not turned on" do
+      assert Werds.words("AFAIK", "AFAIK",[]) == ["AFAIK"]
+      assert Werds.words("AFAIK", "afaik",[]) == []
+    end
+
+    test "it defaults caseless" do
+      assert Werds.words("AFAIK", "AFAIK") == ["AFAIK"]
+      assert Werds.words("AFAIK", "afaik") == ["AFAIK"]
+    end
   end
 end
