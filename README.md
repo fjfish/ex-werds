@@ -19,14 +19,7 @@ Note that the word list has only been minimally cleaned up, be careful of folks 
 We haven't yet done the bureaucratic stuff to get into Hex,
 so instead the package can be installed
 by adding a github dependency `werds` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:werds, github: "fjfish/ex-werds"}
-  ]
-end
-```
+mu
 
 ## Contributing
 
