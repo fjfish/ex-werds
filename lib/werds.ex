@@ -18,9 +18,30 @@ defmodule Werds do
 
   The default search is caseless and will find acronyms and proper names,
     pass an empty options list to turn this behaviour off
+
+  Options [:proper_names] and [:acronyms] will do the obvious thing
   """
   @spec words(String.t(), String.t(), [term()]) :: [String.t()] | {:error, String.t()}
-  def words(source_word, match_pattern, options \\ [:caseless]) do
+
+  def words(source_word, match_pattern), do: words(source_word, match_pattern, [:caseless])
+
+  def words(source_word, match_pattern, [:proper_names]) do
+    words = words(source_word, match_pattern, [:caseless])
+    case words do
+      {:error, message} -> {:error, message}
+      _ -> words |> Enum.filter(&Regex.match?(~r"^[A-Z][a-z]", &1))
+    end
+  end
+
+  def words(source_word, match_pattern, [:acronyms]) do
+    words = words(source_word, match_pattern, [:caseless])
+    case words do
+      {:error, message} -> {:error, message}
+      _ -> words |> Enum.filter(&Regex.match?(~r"^[A-Z]+", &1))
+    end
+  end
+
+  def words(source_word, match_pattern, options) do
     processed_match_pattern = match_pattern |> String.replace(@ellipsis, "...")
 
     {:ok, search_pattern} =
@@ -50,6 +71,7 @@ defmodule Werds do
         |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
     end
   end
+
 
   @doc """
   This takes a string mask like "...x.." and creates a string that can be turned into

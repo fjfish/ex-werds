@@ -50,5 +50,17 @@ defmodule WerdsTest do
       assert Werds.words("AFAIK", "AFAIK") == ["AFAIK"]
       assert Werds.words("AFAIK", "afaik") == ["AFAIK"]
     end
+
+    test "proper names" do
+      assert Werds.words("pole", "p...") == ~w(Pole pole)
+      assert Werds.words("pole", "p...", []) == ~w(pole)
+      assert Werds.words("pole", "p...", [:proper_names]) == ~w(Pole)
+      assert Werds.words("aids", "a...", [:proper_names]) == []
+    end
+
+    test "acronyms" do
+      assert Werds.words("aids", "a...") == ~w(AIDS aids)
+      assert Werds.words("aids", "a...",[:acronyms]) == ~w(AIDS)
+    end
   end
 end
