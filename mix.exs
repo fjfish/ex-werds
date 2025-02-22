@@ -4,10 +4,10 @@ defmodule Werds.MixProject do
   def project do
     [
       app: :werds,
-      version: "1.0.0",
+      version: "1.0.1",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
-      description: "Find dictionary words that can be constructed from a given word",
+      description: "Generate valid word variants from a base word.",
       author: "Francis Fish",
       deps: deps(),
       package: package()

@@ -14,6 +14,10 @@ It uses a word list that was derived from the excellent tool [Scowl](http://word
 
 Note that the word list has only been minimally cleaned up, be careful of folks who get offended easily.
 
+## Development
+
+Run guard with `mix guard` - this will keep the tests running as you change files. The test suite is small but complete for the scenarios we could find.
+
 ## Installation
 
 ```elixir
