@@ -11,20 +11,19 @@ defmodule WerdsTest do
       assert Werds.make_mask("banana", "..") == "^[banana][banana]$"
     end
 
-    test "removes letters from regexp if they appear in match string"  do
+    test "removes letters from regexp if they appear in match string" do
       assert Werds.make_mask("banana", "..n") == "^[baana][baana]n$"
       assert Werds.make_mask("banana", "n.b.n") == "^n[aaa]b[aaa]n$"
     end
   end
 
   describe "words" do
-
     test "it finds a word" do
       assert Werds.words("dredge", "d..d") == ["deed"]
     end
 
     test "it doesn't double up letters" do
-      assert Enum.find(Werds.words("ranger", "....."),&(&1 == "agana")) == nil
+      assert Enum.find(Werds.words("ranger", "....."), &(&1 == "agana")) == nil
     end
 
     test "it doesn't allow letters that aren't in source word" do
@@ -36,15 +35,15 @@ defmodule WerdsTest do
     end
 
     test "it doesn't allow source letters to be used more than once" do
-      assert Werds.words("elegant", "tall") == []
+      assert Werds.words("elegant", "tall") ==
+               {:error, "Matcher uses source letters too many times"}
     end
   end
 
   describe "options" do
-
     test "it matches case when option not turned on" do
-      assert Werds.words("AFAIK", "AFAIK",[]) == ["AFAIK"]
-      assert Werds.words("AFAIK", "afaik",[]) == []
+      assert Werds.words("AFAIK", "AFAIK", []) == ["AFAIK"]
+      assert Werds.words("AFAIK", "afaik", []) == []
     end
 
     test "it defaults caseless" do

@@ -23,30 +23,31 @@ defmodule Werds do
   def words(source_word, match_pattern, options \\ [:caseless]) do
     processed_match_pattern = match_pattern |> String.replace(@ellipsis, "...")
 
+    {:ok, search_pattern} =
+      Regex.compile(make_mask(source_word, processed_match_pattern), options)
+
+    source_char_counts = get_char_counts(source_word)
+    match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
+
+    extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+
+    used_too_many_times =
+      Enum.filter(match_char_counts, fn {k, v} -> v > source_char_counts[k] end)
+
     cond do
       String.length(source_word) < String.length(processed_match_pattern) ->
         {:error, "Matcher has too many letters"}
 
+      extra_letters != [] ->
+        {:error, "Source word does not have letters '#{extra_letters}'"}
+
+      used_too_many_times != [] ->
+        {:error, "Matcher uses source letters too many times"}
+
       true ->
-        {:ok, search_pattern} =
-          Regex.compile(make_mask(source_word, processed_match_pattern), options)
-
-        source_char_counts = get_char_counts(source_word)
-        match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
-
-        extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
-
-        # ella test should be error
-
-        case extra_letters do
-          [] ->
-            @dictionary
-            |> Enum.filter(&Regex.match?(search_pattern, &1))
-            |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
-
-          _ ->
-            {:error, "Source word does not have letters '#{extra_letters}'"}
-        end
+        @dictionary
+        |> Enum.filter(&Regex.match?(search_pattern, &1))
+        |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
     end
   end
 
