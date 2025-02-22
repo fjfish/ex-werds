@@ -20,10 +20,13 @@ defmodule Werds do
     pass an empty options list to turn this behaviour off
 
   Options [:proper_names] and [:acronyms] will do the obvious thing
+
+  The option [:standard] turns of caseless and will only find "proper" words
   """
   @spec words(String.t(), String.t(), [term()]) :: [String.t()] | {:error, String.t()}
 
   def words(source_word, match_pattern), do: words(source_word, match_pattern, [:caseless])
+  def words(source_word, match_pattern, [:standard]), do: words(source_word, match_pattern, [])
 
   def words(source_word, match_pattern, [:proper_names]) do
     words = words(source_word, match_pattern, [:caseless])
