@@ -6,7 +6,6 @@ defmodule Werds do
   # Load the dictionary into a List for quick lookup
   @dictionary Path.join(:code.priv_dir(:werds), "/data/dictionary")
               |> File.read!()
-              |> String.downcase()
               |> String.split("\n", trim: true)
 
   @ellipsis "…"
