@@ -30,6 +30,7 @@ defmodule Werds do
 
   def words(source_word, match_pattern, [:proper_names]) do
     words = words(source_word, match_pattern, [:caseless])
+
     case words do
       {:error, message} -> {:error, message}
       _ -> words |> Enum.filter(&Regex.match?(~r"^[A-Z][a-z]", &1))
@@ -38,6 +39,7 @@ defmodule Werds do
 
   def words(source_word, match_pattern, [:acronyms]) do
     words = words(source_word, match_pattern, [:caseless])
+
     case words do
       {:error, message} -> {:error, message}
       _ -> words |> Enum.filter(&Regex.match?(~r"^[A-Z]+", &1))
@@ -74,7 +76,6 @@ defmodule Werds do
         |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
     end
   end
-
 
   @doc """
   This takes a string mask like "...x.." and creates a string that can be turned into
@@ -114,6 +115,21 @@ defmodule Werds do
     |> Enum.reduce(true, fn char, acc ->
       acc and source_char_counts[char] >= word_char_counts[char]
     end)
+  end
+
+  @doc """
+  Get anagrams
+  """
+  @spec anagrams(String.t()) :: [String.t()]
+  def anagrams(word) do
+    source_word = word |> String.replace(~r/[[:space:]]/, "")
+    match_pattern = source_word |> String.replace(~r/./, ".")
+    search_pattern = Regex.compile!(make_mask(source_word, match_pattern), [:caseless])
+    source_char_counts = get_char_counts(source_word)
+
+    @dictionary
+    |> Enum.filter(&Regex.match?(search_pattern, &1))
+    |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
   end
 
   #  @doc """

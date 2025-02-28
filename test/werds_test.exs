@@ -68,4 +68,9 @@ defmodule WerdsTest do
       assert Werds.words("aids", "a...",[:standard]) == ~w(aids)
     end
   end
+
+  test "anagrams" do
+    assert Werds.anagrams("trashed") == ~w(dearths hardest hatreds threads trashed)
+    assert Werds.anagrams("trashed   ") == ~w(dearths hardest hatreds threads trashed)
+  end
 end

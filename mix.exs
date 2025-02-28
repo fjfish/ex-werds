@@ -4,7 +4,7 @@ defmodule Werds.MixProject do
   def project do
     [
       app: :werds,
-      version: "1.0.1",
+      version: "1.0.4",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       description: "Generate valid word variants from a base word.",
@@ -23,7 +23,7 @@ defmodule Werds.MixProject do
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README.md", "LICENSE*"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE*", "priv/data/dictionary"],
       maintainers: ["Francis Fish"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/fjfish/ex-werds"}
