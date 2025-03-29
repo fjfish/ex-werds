@@ -1,4 +1,7 @@
 defmodule WerdsTest do
+
+  @moduledoc false
+
   use ExUnit.Case
   doctest Werds
 
@@ -60,12 +63,12 @@ defmodule WerdsTest do
 
     test "acronyms" do
       assert Werds.words("aids", "a...") == ~w(AIDS aids)
-      assert Werds.words("aids", "a...",[:acronyms]) == ~w(AIDS)
+      assert Werds.words("aids", "a...", [:acronyms]) == ~w(AIDS)
     end
 
     test "standard" do
       assert Werds.words("aids", "a...") == ~w(AIDS aids)
-      assert Werds.words("aids", "a...",[:standard]) == ~w(aids)
+      assert Werds.words("aids", "a...", [:standard]) == ~w(aids)
     end
   end
 
