@@ -1,10 +1,14 @@
 defmodule Werds do
   @moduledoc """
   A module to generate valid word variants from a base word.
+  Will also find anagrams of a word.
   """
 
+  @data_dir Path.join(:code.priv_dir(:werds), "/data")
+
   # Load the dictionary into a List for quick lookup
-  @dictionary Path.join(:code.priv_dir(:werds), "/data/dictionary")
+  @dictionary @data_dir
+              |> Path.join("/dictionary")
               |> File.read!()
               |> String.split("\n", trim: true)
 
@@ -47,34 +51,65 @@ defmodule Werds do
   end
 
   def words(source_word, match_pattern, options) do
-    processed_match_pattern = match_pattern |> String.replace(@ellipsis, "...")
+    processed_match_pattern = preprocess_match_pattern(match_pattern)
 
-    {:ok, search_pattern} =
-      Regex.compile(make_mask(source_word, processed_match_pattern), options)
+    {:ok, search_pattern} = compile_search_pattern(source_word, processed_match_pattern, options)
 
     source_char_counts = get_char_counts(source_word)
     match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
 
-    extra_letters = Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+    case validate_matcher(source_word, processed_match_pattern, source_char_counts, match_char_counts) do
+      :ok ->
+        filter_dictionary(search_pattern, source_char_counts)
 
-    used_too_many_times =
-      Enum.filter(match_char_counts, fn {k, v} -> v > source_char_counts[k] end)
+      {:error, message} ->
+        {:error, message}
+    end
+  end
 
+  defp preprocess_match_pattern(match_pattern) do
+    match_pattern |> String.replace(@ellipsis, "...")
+  end
+
+  defp compile_search_pattern(source_word, processed_match_pattern, options) do
+    Regex.compile(make_mask(source_word, processed_match_pattern), options)
+  end
+
+  defp validate_matcher(source_word, processed_match_pattern, source_char_counts, match_char_counts) do
     cond do
-      String.length(source_word) < String.length(processed_match_pattern) ->
+      too_many_letters?(source_word, processed_match_pattern) ->
         {:error, "Matcher has too many letters"}
 
-      extra_letters != [] ->
-        {:error, "Source word does not have letters '#{extra_letters}'"}
+      extra_letters?(source_char_counts, match_char_counts) ->
+        {:error, "Source word does not have letters '#{extra_letters(source_char_counts, match_char_counts)}'"}
 
-      used_too_many_times != [] ->
+      overused_letters?(source_char_counts, match_char_counts) ->
         {:error, "Matcher uses source letters too many times"}
 
       true ->
-        @dictionary
-        |> Enum.filter(&Regex.match?(search_pattern, &1))
-        |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
+        :ok
     end
+  end
+
+  defp too_many_letters?(source_word, processed_match_pattern) do
+    String.length(source_word) < String.length(processed_match_pattern)
+  end
+
+  defp extra_letters?(source_char_counts, match_char_counts) do
+    extra_letters(source_char_counts, match_char_counts) != []
+  end
+
+  defp extra_letters(source_char_counts, match_char_counts) do
+    Map.keys(match_char_counts) -- Map.keys(source_char_counts)
+  end
+
+  defp overused_letters?(source_char_counts, match_char_counts) do
+    Enum.any?(match_char_counts, fn {k, v} -> v > source_char_counts[k] end)
+  end
+
+  defp filter_dictionary(search_pattern, source_char_counts) do
+    @dictionary
+    |> Enum.filter(&(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts)))
   end
 
   @doc """
@@ -111,8 +146,8 @@ defmodule Werds do
   """
   @spec check_word(Map, Map) :: true | false
   def check_word(word_char_counts, source_char_counts) do
-    Map.keys(word_char_counts)
-    |> Enum.reduce(true, fn char, acc ->
+
+    Enum.reduce(Map.keys(word_char_counts), true, fn char, acc ->
       acc and source_char_counts[char] >= word_char_counts[char]
     end)
   end
@@ -122,14 +157,29 @@ defmodule Werds do
   """
   @spec anagrams(String.t()) :: [String.t()]
   def anagrams(word) do
-    source_word = word |> String.replace(~r/[[:space:]]/, "")
-    match_pattern = source_word |> String.replace(~r/./, ".")
-    search_pattern = Regex.compile!(make_mask(source_word, match_pattern), [:caseless])
+    source_word = preprocess_word(word)
+    match_pattern = build_match_pattern(source_word)
+    search_pattern = compile_search_pattern!(source_word, match_pattern)
     source_char_counts = get_char_counts(source_word)
 
+    filter_anagrams(search_pattern, source_char_counts)
+  end
+
+  defp preprocess_word(word) do
+    word |> String.replace(~r/[[:space:]]/, "")
+  end
+
+  defp build_match_pattern(source_word) do
+    source_word |> String.replace(~r/./, ".")
+  end
+
+  defp compile_search_pattern!(source_word, match_pattern) do
+    Regex.compile!(make_mask(source_word, match_pattern), [:caseless])
+  end
+
+  defp filter_anagrams(search_pattern, source_char_counts) do
     @dictionary
-    |> Enum.filter(&Regex.match?(search_pattern, &1))
-    |> Enum.filter(&check_word(get_char_counts(&1), source_char_counts))
+    |> Enum.filter(&(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts)))
   end
 
   #  @doc """
