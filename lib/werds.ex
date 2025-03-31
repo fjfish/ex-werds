@@ -144,7 +144,7 @@ defmodule Werds do
   Check that the number of letters in the candidate word are less than or equal
     to the number of letters in the word we used as a source
   """
-  @spec check_word(Map, Map) :: boolean()
+  @spec check_word(map(), map()) :: boolean()
   def check_word(word_char_counts, source_char_counts) do
 
     Enum.reduce(Map.keys(word_char_counts), true, fn char, acc ->
