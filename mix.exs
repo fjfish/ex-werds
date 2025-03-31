@@ -4,7 +4,7 @@ defmodule Werds.MixProject do
   def project do
     [
       app: :werds,
-      version: "1.0.4",
+      version: "1.0.5",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       description: "Generate valid word variants from a base word.",
