@@ -23,7 +23,7 @@ Run guard with `mix guard` - this will keep the tests running as you change file
 ```elixir
 def deps do
   [
-    {:werds, ">= 1.6.1"}
+    {:werds, ">= 1.0.5"}
   ]
 end
 ```
