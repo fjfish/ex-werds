@@ -82,5 +82,27 @@ defmodule WerdsTest do
       keys = %{"a" => :correct, "p" => :correct, "l" => :default, "x" => :incorrect}
       assert Enum.member?(Werds.wordle_suggestions(letters, keys), "apple")
     end
+
+    test "it handles no incorrect letters a word" do
+      letters = %{1 => "a", 2 => "p", 3 => "", 4 => "", 5 => ""}
+      keys = %{"a" => :correct, "p" => :correct, "l" => :default}
+      assert Enum.member?(Werds.wordle_suggestions(letters, keys), "apple")
+    end
+
+    test "only returns words that are 5 long" do
+      letters = %{1 => "a", 2 => "p", 3 => "", 4 => "", 5 => ""}
+      keys = %{"a" => :correct, "p" => :correct, "l" => :default}
+      assert Enum.max(Enum.map(Werds.wordle_suggestions(letters, keys), &String.length/1)) == 5
+      assert Enum.min(Enum.map(Werds.wordle_suggestions(letters, keys), &String.length/1)) == 5
+    end
+
+    test "only lower case words returned" do
+      letters = %{1 => "a", 2 => "p", 3 => "", 4 => "", 5 => ""}
+      keys = %{"a" => :correct, "p" => :correct, "l" => :default}
+
+      assert Enum.find(Werds.wordle_suggestions(letters, keys), fn word ->
+               Regex.scan(~r/[A-Z]/, word) != []
+             end) == nil
+    end
   end
 end

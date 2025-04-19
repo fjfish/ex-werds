@@ -199,6 +199,7 @@ defmodule Werds do
         }) :: [String.t()]
   def wordle_suggestions(letters, keys) do
     rejected_letters = get_rejected_letters(keys)
+
     regex_string = build_regex_string(letters, rejected_letters)
     search_pattern = Regex.compile!("^#{regex_string}$")
 
@@ -211,6 +212,15 @@ defmodule Werds do
     |> Enum.filter(fn {_, v} -> v == :incorrect end)
     |> Enum.map(fn {k, _} -> k end)
     |> Enum.join()
+    |> catch_empty_string
+  end
+
+  defp catch_empty_string(string) do
+    if string == "" do
+      "."
+    else
+      "^#{string}"
+    end
   end
 
   defp build_regex_string(letters, rejected_letters) do
