@@ -58,7 +58,12 @@ defmodule Werds do
     source_char_counts = get_char_counts(source_word)
     match_char_counts = get_char_counts(String.replace(processed_match_pattern, ".", ""))
 
-    case validate_matcher(source_word, processed_match_pattern, source_char_counts, match_char_counts) do
+    case validate_matcher(
+           source_word,
+           processed_match_pattern,
+           source_char_counts,
+           match_char_counts
+         ) do
       :ok ->
         filter_dictionary(search_pattern, source_char_counts)
 
@@ -75,13 +80,19 @@ defmodule Werds do
     Regex.compile(make_mask(source_word, processed_match_pattern), options)
   end
 
-  defp validate_matcher(source_word, processed_match_pattern, source_char_counts, match_char_counts) do
+  defp validate_matcher(
+         source_word,
+         processed_match_pattern,
+         source_char_counts,
+         match_char_counts
+       ) do
     cond do
       too_many_letters?(source_word, processed_match_pattern) ->
         {:error, "Matcher has too many letters"}
 
       extra_letters?(source_char_counts, match_char_counts) ->
-        {:error, "Source word does not have letters '#{extra_letters(source_char_counts, match_char_counts)}'"}
+        {:error,
+         "Source word does not have letters '#{extra_letters(source_char_counts, match_char_counts)}'"}
 
       overused_letters?(source_char_counts, match_char_counts) ->
         {:error, "Matcher uses source letters too many times"}
@@ -109,7 +120,9 @@ defmodule Werds do
 
   defp filter_dictionary(search_pattern, source_char_counts) do
     @dictionary
-    |> Enum.filter(&(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts)))
+    |> Enum.filter(
+      &(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts))
+    )
   end
 
   @doc """
@@ -146,7 +159,6 @@ defmodule Werds do
   """
   @spec check_word(map(), map()) :: boolean()
   def check_word(word_char_counts, source_char_counts) do
-
     Enum.reduce(Map.keys(word_char_counts), true, fn char, acc ->
       acc and source_char_counts[char] >= word_char_counts[char]
     end)
@@ -165,6 +177,48 @@ defmodule Werds do
     filter_anagrams(search_pattern, source_char_counts)
   end
 
+  @doc """
+  Generate wordle suggestions
+
+  letters: a map of letter positions and their values
+  keys: a map of letters and their status
+    :default - letter is not used
+    :correct - letter is in the correct position
+    :misplaced - letter is in the word but not in the correct position
+    :incorrect - letter is not in the word
+
+  The function will return a list of words that match the criteria
+
+  In practice we only use incorrect and the map of letters because any letter
+  we haven't yet checked, inluding the ones we know the position of, could be
+  in the word. So we only need to check the letters that are not in the word.
+
+  """
+  @spec wordle_suggestions(%{required(integer) => String.t()}, %{
+          required(String.t()) => :default | :correct | :misplaced | :incorrect
+        }) :: [String.t()]
+  def wordle_suggestions(letters, keys) do
+    rejected_letters = get_rejected_letters(keys)
+    regex_string = build_regex_string(letters, rejected_letters)
+    search_pattern = Regex.compile!("^#{regex_string}$")
+
+    @dictionary
+    |> Enum.filter(&Regex.match?(search_pattern, &1))
+  end
+
+  defp get_rejected_letters(keys) do
+    keys
+    |> Enum.filter(fn {_, v} -> v == :incorrect end)
+    |> Enum.map(fn {k, _} -> k end)
+    |> Enum.join()
+  end
+
+  defp build_regex_string(letters, rejected_letters) do
+    letters
+    |> Enum.map(fn {_, letter} -> if letter != "", do: letter, else: "[^#{rejected_letters}]" end)
+    |> Enum.join()
+  end
+
   defp preprocess_word(word) do
     word |> String.replace(~r/[[:space:]]/, "")
   end
@@ -179,7 +233,9 @@ defmodule Werds do
 
   defp filter_anagrams(search_pattern, source_char_counts) do
     @dictionary
-    |> Enum.filter(&(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts)))
+    |> Enum.filter(
+      &(Regex.match?(search_pattern, &1) && check_word(get_char_counts(&1), source_char_counts))
+    )
   end
 
   #  @doc """

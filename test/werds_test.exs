@@ -1,5 +1,4 @@
 defmodule WerdsTest do
-
   @moduledoc false
 
   use ExUnit.Case
@@ -75,5 +74,13 @@ defmodule WerdsTest do
   test "anagrams" do
     assert Werds.anagrams("trashed") == ~w(dearths hardest hatreds threads trashed)
     assert Werds.anagrams("trashed   ") == ~w(dearths hardest hatreds threads trashed)
+  end
+
+  describe "wordle suggestsions" do
+    test "it finds a word" do
+      letters = %{1 => "a", 2 => "p", 3 => "", 4 => "", 5 => ""}
+      keys = %{"a" => :correct, "p" => :correct, "l" => :default, "x" => :incorrect}
+      assert Enum.member?(Werds.wordle_suggestions(letters, keys), "apple")
+    end
   end
 end
