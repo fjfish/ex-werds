@@ -189,44 +189,46 @@ defmodule Werds do
 
   The function will return a list of words that match the criteria
 
-  In practice we only use incorrect and the map of letters because any letter
-  we haven't yet checked, inluding the ones we know the position of, could be
-  in the word. So we only need to check the letters that are not in the word.
-
   """
   @spec wordle_suggestions(%{required(integer) => String.t()}, %{
           required(String.t()) => :default | :correct | :misplaced | :incorrect
         }) :: [String.t()]
   def wordle_suggestions(letters, keys) do
-    rejected_letters = get_rejected_letters(keys)
+    rejected_letters = get_letters_for_value(keys, :incorrect)
+    misplaced_letters = get_letters_for_value(keys, :misplaced)
 
     regex_string = build_regex_string(letters, rejected_letters)
     search_pattern = Regex.compile!("^#{regex_string}$")
 
     @dictionary
-    |> Enum.filter(&Regex.match?(search_pattern, &1))
+    |> Enum.filter(
+      &(Regex.match?(search_pattern, &1) &&
+          !Regex.match?(~r/[A-Z]/, &1) &&
+          check_for_misplaced_letters(&1, misplaced_letters))
+    )
   end
 
-  defp get_rejected_letters(keys) do
+  defp check_for_misplaced_letters(_word, ""), do: true
+
+  defp check_for_misplaced_letters(word, misplaced_letters) do
+    Enum.all?(String.graphemes(misplaced_letters), fn letter ->
+      Regex.match?(~r/#{letter}/, word)
+    end)
+  end
+
+  defp get_letters_for_value(keys, value) do
     keys
-    |> Enum.filter(fn {_, v} -> v == :incorrect end)
-    |> Enum.map(fn {k, _} -> k end)
-    |> Enum.join()
-    |> catch_empty_string
+    |> Enum.filter(fn {_, v} -> v == value end)
+    |> Enum.map_join(fn {k, _} -> k end)
   end
 
-  defp catch_empty_string(string) do
-    if string == "" do
-      "."
-    else
-      "^#{string}"
-    end
-  end
+  defp build_regex_string(_letters, ""), do: "....."
 
   defp build_regex_string(letters, rejected_letters) do
     letters
-    |> Enum.map(fn {_, letter} -> if letter != "", do: letter, else: "[^#{rejected_letters}]" end)
-    |> Enum.join()
+    |> Enum.map_join(fn {_, letter} ->
+      if letter != "", do: letter, else: "[^#{rejected_letters}]"
+    end)
   end
 
   defp preprocess_word(word) do

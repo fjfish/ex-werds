@@ -97,12 +97,51 @@ defmodule WerdsTest do
     end
 
     test "only lower case words returned" do
-      letters = %{1 => "a", 2 => "p", 3 => "", 4 => "", 5 => ""}
-      keys = %{"a" => :correct, "p" => :correct, "l" => :default}
+      letters = %{1 => "", 2 => "", 3 => "", 4 => "a", 5 => ""}
+
+      keys = %{
+        "a" => :correct,
+        "d" => :incorrect,
+        "e" => :incorrect,
+        "m" => :incorrect,
+        "r" => :misplaced
+      }
 
       assert Enum.find(Werds.wordle_suggestions(letters, keys), fn word ->
                Regex.scan(~r/[A-Z]/, word) != []
              end) == nil
+    end
+
+    test "suggested words must contain misplaced letters" do
+      letters = %{1 => "", 2 => "", 3 => "", 4 => "a", 5 => ""}
+
+      keys = %{
+        "a" => :correct,
+        "d" => :incorrect,
+        "e" => :incorrect,
+        "m" => :incorrect,
+        "r" => :misplaced
+      }
+
+      assert Enum.find(
+               Werds.wordle_suggestions(letters, keys),
+               &Regex.match?(~r/^[^r]*$/, &1)
+             ) == nil
+    end
+
+    test "suggested words must have letters we know in the right place" do
+      letters = %{1 => "", 2 => "", 3 => "", 4 => "a", 5 => ""}
+
+      keys = %{
+        "a" => :correct,
+        "d" => :incorrect,
+        "e" => :incorrect,
+        "m" => :incorrect,
+        "r" => :misplaced
+      }
+
+      assert Enum.find(Werds.wordle_suggestions(letters, keys), &Regex.match?(~r/^...[^a].$/, &1)) ==
+               nil
     end
   end
 end
